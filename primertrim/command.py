@@ -28,12 +28,12 @@ def main(argv=None):
 
     complete_group = p.add_argument_group("Complete, partial matching stages")
     complete_group.add_argument(
-        "--rev-comp", action='store_true',
+        "--no-revcomp", action='store_true',
         help=(
-            "Match the reverse complement during the complete and "
+            "Don't match the reverse complement during the complete and "
             "partial matching stages"))
     complete_group.add_argument(
-        "--mismatches", type=int, default=2,
+        "--mismatches", type=int, default=1,
         help=(
             "Number of mismatches to primer allowed during the complete "
             "matching stage (default: %(default)s)"))
@@ -66,8 +66,8 @@ def main(argv=None):
     queryset = deambiguate(args.primer)
 
     matchers = [
-        CompleteMatcher(queryset, args.mismatches, args.rev_comp),
-        PartialMatcher(queryset, args.min_partial, args.rev_comp),
+        CompleteMatcher(queryset, args.mismatches, not args.no_revcomp),
+        PartialMatcher(queryset, args.min_partial, not args.no_revcomp),
         ]
 
     if args.alignment:

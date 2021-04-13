@@ -15,7 +15,7 @@ PrimerMatch = collections.namedtuple(
 
 
 class Matcher(abc.ABC):
-    def __init__(self, queryset, match_reverse_complement=False):
+    def __init__(self, queryset, match_reverse_complement=True):
         queryset = list(queryset) # We iterate through the queryset twice
         self.queryset = queryset.copy()
         if match_reverse_complement:
@@ -34,7 +34,7 @@ class Matcher(abc.ABC):
 
 
 class CompleteMatcher(Matcher):
-    def __init__(self, queryset, max_mismatch, match_reverse_complement=False):
+    def __init__(self, queryset, max_mismatch, match_reverse_complement=True):
         super().__init__(queryset, match_reverse_complement)
         self.max_mismatch = max_mismatch
 
@@ -85,7 +85,7 @@ class CompleteMatcher(Matcher):
 
 
 class PartialMatcher(Matcher):
-    def __init__(self, queryset, min_length, match_reverse_complement=False):
+    def __init__(self, queryset, min_length, match_reverse_complement=True):
         super().__init__(queryset, match_reverse_complement)
         self.min_length = min_length
 
