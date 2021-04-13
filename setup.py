@@ -10,8 +10,7 @@ setup(
     packages=['primertrim'],
     entry_points = {
         'console_scripts': [
-            'remove_primers.py=primertrim.remove_primers:main',
-            'filter_paired_fastq.py=primertrim.remove_primers:filter_paired_main'
+            'remove_primers.py=primertrim.command:main',
         ],
     }
 )
