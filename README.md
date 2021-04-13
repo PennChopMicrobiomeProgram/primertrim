@@ -1,24 +1,46 @@
 # Primer trim
 
-## Installation:
+Detect short primer sequences in FASTQ reads and trim the reads accordingly.
+
+## Installation
+
 ```bash
 git clone https://github.com/PennChopMicrobiomeProgram/Primer_trim.git
 cd Primer_trim
-conda activate (env_name)
-pip install -e ./
+pip install -e .
 ```
 
-## Arguments:
--**--input_fastq**: Either forward (R1) or reverse (R2) fastq file  
--**--output_fastq**: Fastq file (R1/R2) with primer sequence trimmed from input fastq file  
--**--log**: A log file that records the position of the trimmed primer sequence  
--**--num_mismatches**: Number of mismatches to primer allowed (default: 0)  
--**--min_length**: Minimum length for partial primer match (default: full length of primer sequence)  
--**--rev_comp**: Include the reverse complement the primer sequences to trim as well
+## Algorithm
 
-## Example:
-```
-remove_primers.py ${PRIMER_SEQUENCE} -i ${INPUT_FASTQ_PATH} -o ${OUTPUT_FASTQ_PATH} --log ${LOG_PATH} --num_mismatches ${INT} --min_length ${INT} --rev_comp
-```
+Primer detection proceeds in three stages: complete matching, partial
+matching and (optionally) matching by alignment.
 
-Remark: both `${INPUT_FASTQ_PATH}` and `${OUTPUT_FASTQ_PATH}` __must__ end with "[R12].fastq"
+In the complete matching stage, we look for the complete primer
+sequence in each read. This stage is implemented in Python, and is
+meant to clear out the "easy" matches before the alignment stage. The
+user can specify how many mismatches we allow (1 by default). The
+algorithm used to detect mismatches starts to get slow for more than 2
+mismatches, therefore 3 is the maximum number of mismatches allowed in
+this stage.
+
+In the partial matching stage, we try to detect the primer sequence if
+it is hanging off the end of the read. The user can specify the
+minimum length to signify detection of the partial primer sequence (10
+base pairs by default).
+
+For the complete and partial matching stages, the user can specify
+whether we search for the reverse complement (yes, by default).
+
+Optionally, the program proceeds to a third stage of matching by
+alignment. Here, we use the `vsearch` aligner to detect primer
+sequences by semi-global alignment. In this stage, we always search
+for the reverse complement. If the user provides an alignment
+directory, the alignment files are kept for inspection or
+debugging. The `vsearch` program must be installed for the alignment
+stage to work.
+
+## Example
+
+```
+remove_primers.py ${PRIMER_SEQUENCE} -i ${INPUT_FASTQ_PATH} -o ${OUTPUT_FASTQ_PATH} --log ${LOG_PATH} --alignment
+```
