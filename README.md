@@ -42,5 +42,6 @@ stage to work.
 ## Example
 
 ```
-remove_primers.py ${PRIMER_SEQUENCE} -i ${INPUT_FASTQ_PATH} -o ${OUTPUT_FASTQ_PATH} --log ${LOG_PATH} --alignment
+remove_primers.py GCATCGATGAAGAACGCAGC -i sample.fastq \
+    -o sample_trimmed.fastq --log sample_trimmed.log --alignment
 ```
