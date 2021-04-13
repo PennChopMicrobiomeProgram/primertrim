@@ -132,7 +132,7 @@ class AlignmentMatcher(Matcher):
         a = VsearchAligner(subject_fp)
         hits = a.search(
             seqs.items(), query_fp, result_fp,
-            min_id=0.7, threads=self.cores)
+            min_id=0.75, threads=self.cores)
 
         for hit in hits:
             seq_id = hit["qseqid"]
