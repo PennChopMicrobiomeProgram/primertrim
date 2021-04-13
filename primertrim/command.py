@@ -1,10 +1,12 @@
 import sys
 import argparse
+import tempfile
 
 from .fastq import TrimmableReads, parse_fastq
-from .matcher import CompleteMatcher, PartialMatcher
+from .matcher import (
+    CompleteMatcher, PartialMatcher, AlignmentMatcher,
+)
 from .dna import reverse_complement, deambiguate
-from .trimmable import TrimmableSeqs
 
 def main(argv=None):
     p = argparse.ArgumentParser()
@@ -29,6 +31,15 @@ def main(argv=None):
     p.add_argument(
         "--rev_comp", action='store_true',
         help="Include the reverse complement the primer sequences to trim as well")
+    p.add_argument(
+        "--skip-alignment", action="store_true",
+        help="Skip the alignment stage")
+    p.add_argument(
+        "--alignment-dir",
+        help="Directory for alignment files (default: temp directory)")
+    p.add_argument(
+        "--threads", type=int,
+        help="Number of CPU threads to use during alignment stage")
     args = p.parse_args(argv)
 
     if args.input_fastq is None:
@@ -50,11 +61,21 @@ def main(argv=None):
         PartialMatcher(queryset, args.min_length),
         ]
 
+    if not args.skip_alignment:
+        if args.alignment_dir:
+            alignment_dir = args.alignment_dir
+        else:
+            temp_alignment_dir = tempfile.TemporaryDirectory()
+            alignment_dir = temp_alignment_dir.name
+        am = AlignmentMatcher(queryset, alignment_dir, args.threads)
+        matchers.append(am)
+
     trimmable_reads = TrimmableReads(parse_fastq(args.input_fastq))
 
     for m in matchers:
-        results = m.find_in_seqs(trimmable_reads.get_unmatched_seqs())
-        for read_id, matchobj in results:
+        unmatched_seqs = trimmable_reads.get_unmatched_seqs()
+        matches_found = m.find_in_seqs(unmatched_seqs)
+        for read_id, matchobj in matches_found:
             if matchobj is not None:
                 trimmable_reads.register_match(read_id, matchobj)
 

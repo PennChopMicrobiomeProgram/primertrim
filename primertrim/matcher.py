@@ -1,12 +1,13 @@
 import abc
 import collections
 import itertools
+import os.path
 
 from .dna import (
     AMBIGUOUS_BASES_COMPLEMENT, deambiguate, replace_with_n,
     partial_seqs_left, partial_seqs_right,
 )
-
+from .align import VsearchAligner
 
 PrimerMatch = collections.namedtuple(
     "PrimerMatch", ["method", "start", "mismatches", "primerseq"])
@@ -98,3 +99,44 @@ class PartialMatcher(Matcher):
            if seq.endswith(right_partial_query):
                start_idx = len(seq) - len(right_partial_query)
                return PrimerMatch("Partial", start_idx, 0, right_partial_query)
+
+
+class AlignmentMatcher(Matcher):
+    def __init__(self, queryset, alignment_dir, cores=1):
+        self.queryset = queryset
+        assert(os.path.exists(alignment_dir))
+        assert(os.path.isdir(alignment_dir))
+        self.alignment_dir = alignment_dir
+        self.cores = cores
+
+    def _make_fp(self, filename):
+        return os.path.join(self.alignment_dir, filename)
+
+    def find_in_seqs(self, seqs):
+        seqs = dict(seqs)
+        # Create the file paths
+        subject_fp = self._make_fp("subject.fa")
+        query_fp = self._make_fp("query.fa")
+        result_fp = self._make_fp("vsearch_hits.txt")
+
+        # The database contains the primer sequences
+        with open(subject_fp, "w") as f:
+            for n, seq in enumerate(self.queryset):
+                f.write(">seq{}\n{}\n".format(n, seq))
+
+        a = VsearchAligner(subject_fp)
+        hits = a.search(
+            seqs.items(), query_fp, result_fp,
+            min_id=0.7, threads=self.cores)
+
+        for hit in hits:
+            seq_id = hit["qseqid"]
+            mismatches = hit["mismatch"]
+            # Vsearch indexes positions starting with 1
+            start_idx = hit["qstart"] - 1
+            end_idx = hit["qend"]
+            seq = seqs[seq_id]
+            primerseq = seq[start_idx:end_idx]
+            matchobj = PrimerMatch(
+                "Alignment", start_idx, mismatches, primerseq)
+            yield seq_id, matchobj
