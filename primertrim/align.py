@@ -4,7 +4,7 @@ import tempfile
 
 DEFAULT_BLAST_FIELDS = [
     "qseqid", "sseqid", "pident", "length", "mismatch", "gapopen",
-    "qstart", "qend", "sstart", "send", "qlen", "slen",
+    "qstart", "qend", "sstart", "send", "qlen", "slen", "qseq", "sseq",
 ]
 
 BLAST_FIELD_TYPES = {
@@ -20,6 +20,8 @@ BLAST_FIELD_TYPES = {
     "send": int,
     "qlen": int,
     "slen": int,
+    "qseq": str,
+    "sseq": str,
 }
 
 BLAST_TO_VSEARCH = {
@@ -35,6 +37,8 @@ BLAST_TO_VSEARCH = {
     "send": "tihi",
     "qlen": "qs",
     "slen": "ts",
+    "qseq": "qrow",
+    "sseq": "trow",
 }
 
 def write_fasta(f, seqs):
@@ -86,7 +90,6 @@ class VsearchAligner:
             "--top_hits_only",
             "--userfields", userfields_arg,
             "--db", self.ref_seqs_fp,
-            "--iddef", "2",
             "--userout", output_fp,
         ]
         if threads is not None:

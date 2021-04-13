@@ -24,7 +24,8 @@ def test_main_script(tmp_path):
         "-i", input_fp,
         "-o", output_fp,
         "--log", log_fp,
-        "--skip-alignment",
+        "--mismatches", "0",
+        "--min-partial", "100",
     ]
     main(args)
 
@@ -44,8 +45,8 @@ def test_main_script(tmp_path):
         "-i", input_fp,
         "-o", output_fp,
         "--log", log_fp,
-        "--num_mismatches", "1",
-        "--skip-alignment",
+        "--mismatches", "1",
+        "--min-partial", "100",
     ]
     main(args)
 

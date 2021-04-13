@@ -1,6 +1,7 @@
 import sys
 import argparse
 import tempfile
+import os
 
 from .fastq import TrimmableReads, parse_fastq
 from .matcher import (
@@ -13,33 +14,47 @@ def main(argv=None):
     p.add_argument(
         "primer",
         help="Primer sequence to be trimmed")
-    p.add_argument(
-        "-i", "--input_fastq", type=argparse.FileType('r'),
+
+    io_group = p.add_argument_group("File I/O")
+    io_group.add_argument(
+        "-i", "--input-fastq", type=argparse.FileType('r'),
         help="Input FASTQ file to be trimmed (default: standard input)")
-    p.add_argument(
-        "-o", "--output_fastq", type=argparse.FileType('w'),
+    io_group.add_argument(
+        "-o", "--output-fastq", type=argparse.FileType('w'),
         help="Output fastq after trimming (default: standard output)")
-    p.add_argument(
+    io_group.add_argument(
         "--log", type=argparse.FileType('w'),
-        help="Log file to record location of primers detected (default: not written)")
-    p.add_argument(
-        "--num_mismatches", type=int, default=0,
-        help="Number of mismatches to primer allowed (default: %(default)s)")
-    p.add_argument(
-        "--min_length", type=int,
-        help="Minimum length for partial primer match (default: full length)")
-    p.add_argument(
-        "--rev_comp", action='store_true',
-        help="Include the reverse complement the primer sequences to trim as well")
-    p.add_argument(
-        "--skip-alignment", action="store_true",
-        help="Skip the alignment stage")
-    p.add_argument(
+        help="Log file of primers and location (default: not written)")
+
+    complete_group = p.add_argument_group("Complete, partial matching stages")
+    complete_group.add_argument(
+        "--rev-comp", action='store_true',
+        help=(
+            "Match the reverse complement during the complete and "
+            "partial matching stages"))
+    complete_group.add_argument(
+        "--mismatches", type=int, default=2,
+        help=(
+            "Number of mismatches to primer allowed during the complete "
+            "matching stage (default: %(default)s)"))
+    complete_group.add_argument(
+        "--min-partial", type=int, default=10,
+        help=(
+            "Minimum length of match during the partial matching stage "
+            "(default: %(default)s)"))
+
+    alignment_group = p.add_argument_group("Alignment matching stage")
+    alignment_group.add_argument(
+        "--alignment", action="store_true",
+        help="Activate the alignment matching stage")
+    alignment_group.add_argument(
         "--alignment-dir",
         help="Directory for alignment files (default: temp directory)")
-    p.add_argument(
+    alignment_group.add_argument(
         "--threads", type=int,
-        help="Number of CPU threads to use during alignment stage")
+        help=(
+            "Number of CPU threads to use during the alignment stage "
+            "(default: all the threads)"))
     args = p.parse_args(argv)
 
     if args.input_fastq is None:
@@ -48,22 +63,18 @@ def main(argv=None):
     if args.output_fastq is None:
         args.output_fastq = sys.stdout
 
-    if args.min_length is None:
-        args.min_length = len(args.primer)
-
-    if args.rev_comp:
-        queryset = deambiguate(args.primer) + deambiguate(reverse_complement(args.primer))
-    else:
-        queryset = deambiguate(args.primer)
+    queryset = deambiguate(args.primer)
 
     matchers = [
-        CompleteMatcher(queryset, args.num_mismatches),
-        PartialMatcher(queryset, args.min_length),
+        CompleteMatcher(queryset, args.mismatches, args.rev_comp),
+        PartialMatcher(queryset, args.min_partial, args.rev_comp),
         ]
 
-    if not args.skip_alignment:
+    if args.alignment:
         if args.alignment_dir:
             alignment_dir = args.alignment_dir
+            if not os.path.exists(alignment_dir):
+                os.mkdir(alignment_dir)
         else:
             temp_alignment_dir = tempfile.TemporaryDirectory()
             alignment_dir = temp_alignment_dir.name

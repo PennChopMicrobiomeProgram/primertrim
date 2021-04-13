@@ -2,10 +2,11 @@ import abc
 import collections
 import itertools
 import os.path
+import sys
 
 from .dna import (
-    AMBIGUOUS_BASES_COMPLEMENT, deambiguate, replace_with_n,
-    partial_seqs_left, partial_seqs_right,
+    AMBIGUOUS_BASES_COMPLEMENT, deambiguate, reverse_complement,
+    replace_with_n, partial_seqs_left, partial_seqs_right,
 )
 from .align import VsearchAligner
 
@@ -14,8 +15,13 @@ PrimerMatch = collections.namedtuple(
 
 
 class Matcher(abc.ABC):
-    def __init__(self, queryset):
-        self.queryset = queryset
+    def __init__(self, queryset, match_reverse_complement=False):
+        queryset = list(queryset) # We iterate through the queryset twice
+        self.queryset = queryset.copy()
+        if match_reverse_complement:
+            for seq in queryset:
+                rc_seq = reverse_complement(seq)
+                self.queryset.append(rc_seq)
 
     def find_in_seqs(self, seqs):
         for seq_id, seq in seqs:
@@ -28,8 +34,8 @@ class Matcher(abc.ABC):
 
 
 class CompleteMatcher(Matcher):
-    def __init__(self, queryset, max_mismatch):
-        super().__init__(queryset)
+    def __init__(self, queryset, max_mismatch, match_reverse_complement=False):
+        super().__init__(queryset, match_reverse_complement)
         self.max_mismatch = max_mismatch
 
         # To look for near matches in the reference sequence, we
@@ -79,8 +85,8 @@ class CompleteMatcher(Matcher):
 
 
 class PartialMatcher(Matcher):
-    def __init__(self, queryset, min_length):
-        super().__init__(queryset)
+    def __init__(self, queryset, min_length, match_reverse_complement=False):
+        super().__init__(queryset, match_reverse_complement)
         self.min_length = min_length
 
         self.partial_queries_left = []
@@ -131,10 +137,11 @@ class AlignmentMatcher(Matcher):
 
         for hit in hits:
             seq_id = hit["qseqid"]
-            mismatches = hit["mismatch"]
+            mismatches = hit["mismatch"] + hit["gapopen"]
             # Vsearch indexes positions starting with 1
             start_idx = hit["qstart"] - 1
             end_idx = hit["qend"]
+            assert(start_idx < end_idx)
             seq = seqs[seq_id]
             primerseq = seq[start_idx:end_idx]
             matchobj = PrimerMatch(
