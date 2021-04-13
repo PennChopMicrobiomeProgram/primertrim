@@ -38,7 +38,7 @@ def main(argv=None):
             "Number of mismatches to primer allowed during the complete "
             "matching stage (default: %(default)s)"))
     complete_group.add_argument(
-        "--min-partial", type=int, default=10,
+        "--min-partial", type=int, default=8,
         help=(
             "Minimum length of match during the partial matching stage "
             "(default: %(default)s)"))

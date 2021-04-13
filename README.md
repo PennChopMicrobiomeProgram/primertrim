@@ -25,7 +25,7 @@ this stage.
 
 In the partial matching stage, we try to detect the primer sequence if
 it is hanging off the end of the read. The user can specify the
-minimum length to signify detection of the partial primer sequence (10
+minimum length to signify detection of the partial primer sequence (8
 base pairs by default).
 
 For the complete and partial matching stages, the user can specify
