@@ -12,7 +12,7 @@ from .dna import reverse_complement, deambiguate
 def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument(
-        "primer",
+        "primer", nargs="+",
         help="Primer sequence to be trimmed")
 
     io_group = p.add_argument_group("File I/O")
@@ -63,7 +63,10 @@ def main(argv=None):
     if args.output_fastq is None:
         args.output_fastq = sys.stdout
 
-    queryset = deambiguate(args.primer)
+    queryset = []
+    for ambiguous_primer in args.primer:
+        for unambiguous_primer in deambiguate(ambiguous_primer):
+            queryset.append(unambiguous_primer)
 
     matchers = [
         CompleteMatcher(queryset, args.mismatches, not args.no_revcomp),
