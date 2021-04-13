@@ -50,7 +50,7 @@ class VsearchAligner:
         self.ref_seqs_fp = ref_seqs_fp
         self.fields = DEFAULT_BLAST_FIELDS
         self.convert_types = True
-        self.stderr = None # subprocess.DEVNULL
+        self.stderr = subprocess.DEVNULL
 
     def search(self, seqs, input_fp=None, output_fp=None, **kwargs):
         """Search seqs and return hits"""
@@ -109,18 +109,3 @@ class VsearchAligner:
                     fcn = BLAST_FIELD_TYPES[field]
                     res[field] = fcn(res[field])
             yield res
-
-    @property
-    def ref_seqs_udb_fp(self):
-        base_fp, _ = os.path.splitext(self.ref_seqs_fp)
-        return base_fp + ".udb"
-
-    def make_reference_udb(self):
-        if os.path.exists(self.ref_seqs_udb_fp):
-            return
-        args = [
-            "vsearch",
-            "--makeudb_usearch", self.ref_seqs_fp,
-            "--output", self.ref_seqs_udb_fp,
-        ]
-        return subprocess.check_call(args, stderr=self.stderr)

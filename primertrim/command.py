@@ -1,13 +1,13 @@
-import sys
 import argparse
-import tempfile
 import os
+import sys
+import tempfile
 
-from .fastq import TrimmableReads, parse_fastq
+from .fastq import TrimmableReads
 from .matcher import (
     CompleteMatcher, PartialMatcher, AlignmentMatcher,
 )
-from .dna import reverse_complement, deambiguate
+from .dna import deambiguate
 
 def main(argv=None):
     p = argparse.ArgumentParser()
@@ -84,7 +84,7 @@ def main(argv=None):
         am = AlignmentMatcher(queryset, alignment_dir, args.threads)
         matchers.append(am)
 
-    trimmable_reads = TrimmableReads(parse_fastq(args.input_fastq))
+    trimmable_reads = TrimmableReads.from_fastq(args.input_fastq)
 
     for m in matchers:
         unmatched_seqs = trimmable_reads.get_unmatched_seqs()

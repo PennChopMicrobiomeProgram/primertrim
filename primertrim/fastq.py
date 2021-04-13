@@ -1,22 +1,3 @@
-def parse_fastq(f):
-    for desc, seq, _, qual in _grouper(f, 4):
-        desc = desc.rstrip()[1:]
-        seq = seq.rstrip()
-        qual = qual.rstrip()
-        yield (desc, seq, qual)
-
-
-def _grouper(iterable, n):
-    "Collect data into fixed-length chunks or blocks"
-    # grouper('ABCDEFG', 3) --> ABC DEF
-    args = [iter(iterable)] * n
-    return zip(*args)
-
-
-def get_read_id(desc):
-    return desc.split(maxsplit=1)[0]
-
-
 class TrimmableReads:
     def __init__(self, reads):
         self.descs = {}
@@ -31,6 +12,10 @@ class TrimmableReads:
             self.seqs[read_id] = seq
             self.quals[read_id] = qual
             self.matches[read_id] = None
+
+    @classmethod
+    def from_fastq(cls, f):
+        return cls(parse_fastq(f))
 
     def get_unmatched_seqs(self):
         for read_id, match in self.matches.items():
@@ -50,3 +35,22 @@ class TrimmableReads:
                 seq = seq[:matchobj.start]
                 qual = qual[:matchobj.start]
             yield (desc, seq, qual)
+
+
+def parse_fastq(f):
+    for desc, seq, _, qual in _grouper(f, 4):
+        desc = desc.rstrip()[1:]
+        seq = seq.rstrip()
+        qual = qual.rstrip()
+        yield (desc, seq, qual)
+
+
+def _grouper(iterable, n):
+    "Collect data into fixed-length chunks or blocks"
+    # grouper('ABCDEFG', 3) --> ABC DEF
+    args = [iter(iterable)] * n
+    return zip(*args)
+
+
+def get_read_id(desc):
+    return desc.split(maxsplit=1)[0]

@@ -2,7 +2,6 @@ import abc
 import collections
 import itertools
 import os.path
-import sys
 
 from .dna import (
     AMBIGUOUS_BASES_COMPLEMENT, deambiguate, reverse_complement,
