@@ -5,8 +5,8 @@ Detect short primer sequences in FASTQ reads and trim the reads accordingly.
 ## Installation
 
 ```bash
-git clone https://github.com/PennChopMicrobiomeProgram/Primer_trim.git
-cd Primer_trim
+git clone https://github.com/PennChopMicrobiomeProgram/primertrim.git
+cd primertrim
 pip install -e .
 ```
 
@@ -41,7 +41,7 @@ stage to work.
 
 ## Example
 
-```
-remove_primers.py GCATCGATGAAGAACGCAGC -i sample.fastq \
-    -o sample_trimmed.fastq --log sample_trimmed.log --alignment
+```bash
+ptrim GCATCGATGAAGAACGCAGC -i sample.fastq -o sample_trimmed.fastq \
+    --log sample_trimmed.log --alignment
 ```

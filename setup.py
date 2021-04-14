@@ -2,15 +2,15 @@ from setuptools import setup
 
 setup(
     name='primertrim',
-    version='0.0.1',
+    version='0.0.2',
     description='Trim primer sequences from FASTQ files',
     author='PennCHOP Microbiome Program',
     author_email='BITTINGERK@chop.edu',
-    url='https://github.com/PennChopMicrobiomeProgram/Primer_trim',
+    url='https://github.com/PennChopMicrobiomeProgram/primertrim',
     packages=['primertrim'],
     entry_points = {
         'console_scripts': [
-            'remove_primers.py=primertrim.command:main',
+            'ptrim=primertrim.command:main',
         ],
     }
 )
