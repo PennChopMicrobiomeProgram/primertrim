@@ -94,7 +94,8 @@ def main(argv=None):
                 trimmable_reads.register_match(read_id, matchobj)
 
     for desc, seq, qual in trimmable_reads.get_trimmed_reads():
-        args.output_fastq.write("@{0}\n{1}\n+\n{2}\n".format(desc, seq, qual))
+        if seq != "":
+            args.output_fastq.write("@{0}\n{1}\n+\n{2}\n".format(desc, seq, qual))
 
     if args.log:
         for read_id, matchobj in trimmable_reads.matches.items():
