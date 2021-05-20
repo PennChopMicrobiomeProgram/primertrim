@@ -21,10 +21,16 @@ def main(argv=None):
         help="Input FASTQ file to be trimmed (default: standard input)")
     io_group.add_argument(
         "-o", "--output-fastq", type=argparse.FileType('w'),
-        help="Output fastq after trimming (default: standard output)")
+        help="Output FASTQ file after trimming (default: standard output)")
     io_group.add_argument(
         "--log", type=argparse.FileType('w'),
         help="Log file of primers and location (default: not written)")
+    io_group.add_argument(
+        "--min-length", type=int, default=0,
+        help=(
+            "Minimum length of reads written to the output FASTQ file. Set to "
+            "a negative number to write all reads, including zero-length "
+            "reads (default: 0)"))
 
     complete_group = p.add_argument_group("Complete, partial matching stages")
     complete_group.add_argument(
@@ -94,7 +100,7 @@ def main(argv=None):
                 trimmable_reads.register_match(read_id, matchobj)
 
     for desc, seq, qual in trimmable_reads.get_trimmed_reads():
-        if seq != "":
+        if len(seq) >= args.min_length:
             args.output_fastq.write("@{0}\n{1}\n+\n{2}\n".format(desc, seq, qual))
 
     if args.log:
