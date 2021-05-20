@@ -100,14 +100,14 @@ def main(argv=None):
             if matchobj is not None:
                 trimmable_reads.register_match(read_id, matchobj)
 
-    output_reads = trimmable_reads.output_trimmed_reads(args.min_length)
+    output_reads = trimmable_reads.output_reads(args.min_length)
     write_fastq(args.output_fastq, output_reads)
 
-    log_records = trimmable_reads.output_log_records()
-    write_log(args.log, log_records)
+    output_loginfo = trimmable_reads.output_loginfo()
+    write_log(args.log, output_loginfo)
 
 
-def write_log(f, log_records):
-    for log_record in log_records:
-        f.write("\t".join(str(x) for x in log_record))
+def write_log(f, loginfo):
+    for vals in loginfo:
+        f.write("\t".join(map(str, vals)))
         f.write("\n")
