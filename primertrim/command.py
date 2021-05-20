@@ -15,19 +15,14 @@ class Writer:
         self.min_length = min_length
 
     def write_fastq(self, f):
-        for desc, seq, qual in self.reads.get_trimmed_reads():
-            if len(seq) >= self.min_length:
-                f.write("@{0}\n{1}\n+\n{2}\n".format(desc, seq, qual))
+        for desc, seq, qual in self.reads.get_trimmed_reads(self.min_length):
+            f.write("@{0}\n{1}\n+\n{2}\n".format(desc, seq, qual))
 
     def write_log(self, f):
-        for read_id, matchobj in self.reads.matches.items():
-            if matchobj is None:
-                f.write("{0}\t\t\t\t\n".format(read_id))
-            else:
-                f.write("{0}\t{1}\t{2}\t{3}\t{4}\n".format(
-                    read_id, matchobj.method, matchobj.start,
-                    matchobj.mismatches, matchobj.primerseq,
-                ))
+        for log_record in self.reads.get_log_records():
+            f.write("\t".join(str(x) for x in log_record))
+            f.write("\n")
+
 
 
 def main(argv=None):
