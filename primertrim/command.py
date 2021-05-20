@@ -9,6 +9,27 @@ from .matcher import (
 )
 from .dna import deambiguate
 
+class Writer:
+    def __init__(self, trimmable_reads, min_length=0):
+        self.reads = trimmable_reads
+        self.min_length = min_length
+
+    def write_fastq(self, f):
+        for desc, seq, qual in self.reads.get_trimmed_reads():
+            if len(seq) >= self.min_length:
+                f.write("@{0}\n{1}\n+\n{2}\n".format(desc, seq, qual))
+
+    def write_log(self, f):
+        for read_id, matchobj in self.reads.matches.items():
+            if matchobj is None:
+                f.write("{0}\t\t\t\t\n".format(read_id))
+            else:
+                f.write("{0}\t{1}\t{2}\t{3}\t{4}\n".format(
+                    read_id, matchobj.method, matchobj.start,
+                    matchobj.mismatches, matchobj.primerseq,
+                ))
+
+
 def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument(
@@ -99,16 +120,7 @@ def main(argv=None):
             if matchobj is not None:
                 trimmable_reads.register_match(read_id, matchobj)
 
-    for desc, seq, qual in trimmable_reads.get_trimmed_reads():
-        if len(seq) >= args.min_length:
-            args.output_fastq.write("@{0}\n{1}\n+\n{2}\n".format(desc, seq, qual))
-
+    writer = Writer(trimmable_reads, args.min_length)
+    writer.write_fastq(args.output_fastq)
     if args.log:
-        for read_id, matchobj in trimmable_reads.matches.items():
-            if matchobj is None:
-                args.log.write("{0}\t\t\t\t\n".format(read_id))
-            else:
-                args.log.write("{0}\t{1}\t{2}\t{3}\t{4}\n".format(
-                    read_id, matchobj.method, matchobj.start,
-                    matchobj.mismatches, matchobj.primerseq,
-                ))
+        writer.write_log(args.log)
