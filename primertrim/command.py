@@ -108,6 +108,7 @@ def main(argv=None):
 
 
 def write_log(f, loginfo):
+    f.write("read_id\tmatch_type\ttrimmed_length\tmismatches\tobserved_primer\n")
     for vals in loginfo:
         f.write("\t".join(map(str, vals)))
         f.write("\n")
