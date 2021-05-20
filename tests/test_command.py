@@ -16,7 +16,7 @@ def read_from(filepath):
     return res
 
 def test_main_script(tmp_path):
-    input_fp = data_fp("Sub10003.V1.sputum.redo_R1.fastq")
+    input_fp = data_fp("example.fastq")
     output_fp = str(tmp_path / "out.fastq")
     log_fp = str(tmp_path / "out.log")
     args = [
@@ -29,8 +29,8 @@ def test_main_script(tmp_path):
     ]
     main(args)
 
-    expected_log_fp = data_fp("no_primer_Sub10003.V1.sputum.redo_R1.log")
+    expected_log_fp = data_fp("trimmed_example.log")
     assert read_from(log_fp) == read_from(expected_log_fp)
 
-    expected_output_fp = data_fp("no_primer_Sub10003.V1.sputum.redo_min50_R1.fastq")
+    expected_output_fp = data_fp("trimmed_example.fastq")
     assert read_from(output_fp) == read_from(expected_output_fp)
