@@ -32,5 +32,5 @@ def test_main_script(tmp_path):
     expected_log_fp = data_fp("no_primer_Sub10003.V1.sputum.redo_R1.log")
     assert read_from(log_fp) == read_from(expected_log_fp)
 
-    expected_output_fp = data_fp("no_primer_Sub10003.V1.sputum.redo_R1.fastq")
+    expected_output_fp = data_fp("no_primer_Sub10003.V1.sputum.redo_min50_R1.fastq")
     assert read_from(output_fp) == read_from(expected_output_fp)

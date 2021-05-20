@@ -27,11 +27,11 @@ def main(argv=None):
         "--log", type=argparse.FileType('w'),
         help="Log file of primers and location (default: not written)")
     io_group.add_argument(
-        "--min-length", type=int, default=0,
+        "--min-length", type=int, default=50,
         help=(
             "Minimum length of reads written to the output FASTQ file. Set to "
             "a negative number to write all reads, including zero-length "
-            "reads (default: 0)"))
+            "reads (default: %(default)s)"))
 
     complete_group = p.add_argument_group("Complete, partial matching stages")
     complete_group.add_argument(
