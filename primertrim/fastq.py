@@ -40,7 +40,8 @@ class TrimmableReads:
     def output_loginfo(self):
         for read_id, matchobj in self.matches.items():
             if matchobj is None:
-                yield (read_id, "", "", "", "")
+                seq = self.seqs[read_id]
+                yield (read_id, "No match", len(seq), "", "")
             else:
                 yield (
                     read_id, matchobj.method, matchobj.start,

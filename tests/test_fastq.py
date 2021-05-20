@@ -16,9 +16,9 @@ output_reads = [
 ]
 
 output_loginfo = [
-    ("seq1", "", "", "", ""),
+    ("seq1", "No match", 20, "", ""),
     ("seq2", "Complete", 10, 0, "ACTGCATTGA"),
-    ("seq3", "", "", "", ""),
+    ("seq3", "No match", 20, "", ""),
 ]
 
 class MockMatch:
