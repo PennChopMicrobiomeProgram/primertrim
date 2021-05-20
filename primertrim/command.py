@@ -98,6 +98,7 @@ def main(argv=None):
             args.output_fastq.write("@{0}\n{1}\n+\n{2}\n".format(desc, seq, qual))
 
     if args.log:
+        args.log.write("read_id\tmatch_type\ttrimmed_length\tmismatches\tobserved_primer\n")
         for read_id, matchobj in trimmable_reads.matches.items():
             if matchobj is None:
                 seq = trimmable_reads.seqs[read_id]
