@@ -36,7 +36,7 @@ def test_main_script(tmp_path):
     assert read_from(output_fp) == read_from(expected_output_fp)
 
 
-def test_main_script(tmp_path):
+def test_main_script_1mm(tmp_path):
     input_fp = data_fp("Sub10003.V1.sputum.redo_R1.fastq")
     output_fp = str(tmp_path / "out.fastq")
     log_fp = str(tmp_path / "out.log")
