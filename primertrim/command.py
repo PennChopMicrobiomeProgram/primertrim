@@ -15,11 +15,11 @@ class Writer:
         self.min_length = min_length
 
     def write_fastq(self, f):
-        for desc, seq, qual in self.reads.get_trimmed_reads(self.min_length):
+        for desc, seq, qual in self.reads.output_trimmed_reads(self.min_length):
             f.write("@{0}\n{1}\n+\n{2}\n".format(desc, seq, qual))
 
     def write_log(self, f):
-        for log_record in self.reads.get_log_records():
+        for log_record in self.reads.output_log_records():
             f.write("\t".join(str(x) for x in log_record))
             f.write("\n")
 
