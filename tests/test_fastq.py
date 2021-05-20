@@ -54,3 +54,14 @@ def test_output():
     assert list(t.output_reads()) == output_reads
     assert list(t.output_loginfo()) == output_loginfo
 
+def test_output_min_length():
+    t = TrimmableReads(input_reads)
+    m = MockMatch()
+    t.register_match("seq2", m)
+
+    # All reads written out
+    assert list(t.output_reads(min_length=0)) == output_reads
+    # Removes seq2, a.k.a. output_reads[1]
+    assert list(t.output_reads(min_length=15)) == [output_reads[0], output_reads[2]]
+    # No reads are long enough
+    assert list(t.output_reads(min_length=30)) == []
