@@ -47,6 +47,10 @@ class TrimmableReads:
                     matchobj.mismatches, matchobj.primerseq,
                 )
 
+def write_fastq(f, reads):
+    for desc, seq, qual in reads:
+        f.write("@{0}\n{1}\n+\n{2}\n".format(desc, seq, qual))
+
 
 def parse_fastq(f):
     for desc, seq, _, qual in _grouper(f, 4):

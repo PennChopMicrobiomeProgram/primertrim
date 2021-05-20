@@ -3,26 +3,11 @@ import os
 import sys
 import tempfile
 
-from .fastq import TrimmableReads
+from .fastq import TrimmableReads, write_fastq
 from .matcher import (
     CompleteMatcher, PartialMatcher, AlignmentMatcher,
 )
 from .dna import deambiguate
-
-class Writer:
-    def __init__(self, trimmable_reads, min_length=0):
-        self.reads = trimmable_reads
-        self.min_length = min_length
-
-    def write_fastq(self, f):
-        for desc, seq, qual in self.reads.output_trimmed_reads(self.min_length):
-            f.write("@{0}\n{1}\n+\n{2}\n".format(desc, seq, qual))
-
-    def write_log(self, f):
-        for log_record in self.reads.output_log_records():
-            f.write("\t".join(str(x) for x in log_record))
-            f.write("\n")
-
 
 
 def main(argv=None):
@@ -115,7 +100,14 @@ def main(argv=None):
             if matchobj is not None:
                 trimmable_reads.register_match(read_id, matchobj)
 
-    writer = Writer(trimmable_reads, args.min_length)
-    writer.write_fastq(args.output_fastq)
-    if args.log:
-        writer.write_log(args.log)
+    output_reads = trimmable_reads.output_trimmed_reads(args.min_length)
+    write_fastq(args.output_fastq, output_reads)
+
+    log_records = trimmable_reads.output_log_records()
+    write_log(args.log, log_records)
+
+
+def write_log(f, log_records):
+    for log_record in log_records:
+        f.write("\t".join(str(x) for x in log_record))
+        f.write("\n")
