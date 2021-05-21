@@ -41,12 +41,17 @@ class TrimmableReads:
         for read_id, matchobj in self.matches.items():
             if matchobj is None:
                 seq = self.seqs[read_id]
-                yield (read_id, "No match", len(seq), "", "")
+                yield (read_id, "No match", len(seq), None, None)
             else:
                 yield (
                     read_id, matchobj.method, matchobj.start,
                     matchobj.mismatches, matchobj.primerseq,
                 )
+
+    loginfo_colnames = [
+        "read_id", "match_type", "trimmed_length", "mismatches",
+        "observed_primer"]
+
 
 def write_fastq(f, reads):
     for desc, seq, qual in reads:

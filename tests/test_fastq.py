@@ -7,9 +7,9 @@ read1 = ("seq1", "ATGTCATGACTTGACTGCGG", "FFFFFFFFFFFFFFFFFFFF")
 read2 = ("seq2", "AGTCACGCTGACTGCATTGA", "FFFFFFFFFFFFFFFFFFFF")
 read3 = ("seq3", "TACGTCATGCATCGTAGTAA", "FFFFFFFFFFFFFFFFFFFF")
 
-log1 = ("seq1", "No match", 20, "", "")
-log2 = ("seq2", "No match", 20, "", "")
-log3 = ("seq3", "No match", 20, "", "")
+log1 = ("seq1", "No match", 20, None, None)
+log2 = ("seq2", "No match", 20, None, None)
+log3 = ("seq3", "No match", 20, None, None)
 
 read2_trim10 = ("seq2", "AGTCACGCTG", "FFFFFFFFFF")
 log2_trim10 = ("seq2", "Complete", 10, 0, "ACTGCATTGA")

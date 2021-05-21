@@ -103,11 +103,13 @@ def main(argv=None):
     write_fastq(args.output_fastq, output_reads)
 
     output_loginfo = trimmable_reads.output_loginfo()
-    write_log(args.log, output_loginfo)
+    write_log(args.log, output_loginfo, trimmable_reads.loginfo_colnames)
 
 
-def write_log(f, loginfo):
-    f.write("read_id\tmatch_type\ttrimmed_length\tmismatches\tobserved_primer\n")
+def write_log(f, loginfo, colnames=None):
+    if colnames:
+        f.write("\t".join(colnames))
+        f.write("\n")
     for vals in loginfo:
-        f.write("\t".join(map(str, vals)))
+        f.write("\t".join(str(v) if v is not None else "" for v in vals))
         f.write("\n")
