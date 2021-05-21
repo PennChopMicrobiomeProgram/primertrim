@@ -106,6 +106,11 @@ def main(argv=None):
     write_log(args.log, output_loginfo, trimmable_reads.loginfo_colnames)
 
 
+def write_fastq(f, reads):
+    for desc, seq, qual in reads:
+        f.write("@{0}\n{1}\n+\n{2}\n".format(desc, seq, qual))
+
+
 def write_log(f, loginfo, colnames=None):
     if colnames:
         f.write("\t".join(colnames))
