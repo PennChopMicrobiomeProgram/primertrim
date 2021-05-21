@@ -3,38 +3,35 @@ from primertrim.fastq import TrimmableReads
 from collections import namedtuple
 
 
-input_reads = [
-    ("seq1", "ATGTCATGACTTGACTGCGG", "FFFFFFFFFFFFFFFFFFFF"),
-    ("seq2", "AGTCACGCTGACTGCATTGA", "FFFFFFFFFFFFFFFFFFFF"),
-    ("seq3", "TACGTCATGCATCGTAGTAA", "FFFFFFFFFFFFFFFFFFFF"),
-]
+read1 = ("seq1", "ATGTCATGACTTGACTGCGG", "FFFFFFFFFFFFFFFFFFFF")
+read2 = ("seq2", "AGTCACGCTGACTGCATTGA", "FFFFFFFFFFFFFFFFFFFF")
+read3 = ("seq3", "TACGTCATGCATCGTAGTAA", "FFFFFFFFFFFFFFFFFFFF")
 
-output_reads = [
-    ("seq1", "ATGTCATGACTTGACTGCGG", "FFFFFFFFFFFFFFFFFFFF"),
-    ("seq2", "AGTCACGCTG", "FFFFFFFFFF"),
-    ("seq3", "TACGTCATGCATCGTAGTAA", "FFFFFFFFFFFFFFFFFFFF"),
-]
+log1 = ("seq1", "No match", 20, "", "")
+log2 = ("seq2", "No match", 20, "", "")
+log3 = ("seq3", "No match", 20, "", "")
 
-output_loginfo = [
-    ("seq1", "No match", 20, "", ""),
-    ("seq2", "Complete", 10, 0, "ACTGCATTGA"),
-    ("seq3", "No match", 20, "", ""),
-]
+read2_trim10 = ("seq2", "AGTCACGCTG", "FFFFFFFFFF")
+log2_trim10 = ("seq2", "Complete", 10, 0, "ACTGCATTGA")
+read2_trim0 = ("seq2", "", "")
+
 
 class MockMatch:
     method = "Complete"
-    start = 10
     mismatches = 0
     primerseq = "ACTGCATTGA"
 
+    def __init__(self, start):
+        self.start = start
+
 
 def test_register_match():
-    t = TrimmableReads(input_reads)
+    t = TrimmableReads([read1, read2, read3])
 
     read_ids = [read_id for read_id, seq in t.get_unmatched_seqs()]
     assert read_ids == ["seq1", "seq2", "seq3"]
 
-    m = MockMatch()
+    m = MockMatch(10)
     t.register_match("seq2", m)
 
     read_ids = [read_id for read_id, seq in t.get_unmatched_seqs()]
@@ -42,26 +39,38 @@ def test_register_match():
 
 
 def test_output():
-    t = TrimmableReads(input_reads)
+    t = TrimmableReads([read1, read2, read3])
 
-    # No matches found, nothing changed from input
-    assert list(t.output_reads()) == input_reads
+    assert list(t.output_reads()) == [read1, read2, read3]
 
-    m = MockMatch()
+    m = MockMatch(10)
     t.register_match("seq2", m)
 
-    # Now we have the expected output
-    assert list(t.output_reads()) == output_reads
-    assert list(t.output_loginfo()) == output_loginfo
+    assert list(t.output_reads()) == [read1, read2_trim10, read3]
+    assert list(t.output_loginfo()) == [log1, log2_trim10, log3]
+
 
 def test_output_min_length():
-    t = TrimmableReads(input_reads)
-    m = MockMatch()
+    t = TrimmableReads([read1, read2, read3])
+    m = MockMatch(10)
     t.register_match("seq2", m)
 
     # All reads written out
-    assert list(t.output_reads(min_length=0)) == output_reads
-    # Removes seq2, a.k.a. output_reads[1]
-    assert list(t.output_reads(min_length=15)) == [output_reads[0], output_reads[2]]
+    assert list(t.output_reads(min_length=0)) == [read1, read2_trim10, read3]
+    # Removes read2
+    assert list(t.output_reads(min_length=15)) == [read1, read3]
     # No reads are long enough
     assert list(t.output_reads(min_length=30)) == []
+
+
+def test_output_zero_length():
+    t = TrimmableReads([read1, read2, read3])
+    m = MockMatch(0)
+    t.register_match("seq2", m)
+
+    # All reads written out
+    assert list(t.output_reads(min_length=0)) == [read1, read2_trim0, read3]
+    # Negative min_length writes out all reads
+    assert list(t.output_reads(min_length=-5)) == [read1, read2_trim0, read3]
+    # Removes read2
+    assert list(t.output_reads(min_length=1)) == [read1, read3]
