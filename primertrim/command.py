@@ -3,11 +3,12 @@ import os
 import sys
 import tempfile
 
-from .fastq import TrimmableReads
+from .trimmable_reads import TrimmableReads
 from .matcher import (
     CompleteMatcher, PartialMatcher, AlignmentMatcher,
 )
 from .dna import deambiguate
+
 
 def main(argv=None):
     p = argparse.ArgumentParser()
@@ -21,10 +22,15 @@ def main(argv=None):
         help="Input FASTQ file to be trimmed (default: standard input)")
     io_group.add_argument(
         "-o", "--output-fastq", type=argparse.FileType('w'),
-        help="Output fastq after trimming (default: standard output)")
+        help="Output FASTQ file after trimming (default: standard output)")
     io_group.add_argument(
         "--log", type=argparse.FileType('w'),
         help="Log file of primers and location (default: not written)")
+    io_group.add_argument(
+        "--min-length", type=int, default=50,
+        help=(
+            "Minimum length of reads written to the output FASTQ file. "
+            "(default: %(default)s)"))
 
     complete_group = p.add_argument_group("Complete, partial matching stages")
     complete_group.add_argument(
@@ -93,19 +99,22 @@ def main(argv=None):
             if matchobj is not None:
                 trimmable_reads.register_match(read_id, matchobj)
 
-    for desc, seq, qual in trimmable_reads.get_trimmed_reads():
-        if seq != "":
-            args.output_fastq.write("@{0}\n{1}\n+\n{2}\n".format(desc, seq, qual))
+    output_reads = trimmable_reads.output_reads(args.min_length)
+    write_fastq(args.output_fastq, output_reads)
 
-    if args.log:
-        args.log.write("read_id\tmatch_type\ttrimmed_length\tmismatches\tobserved_primer\n")
-        for read_id, matchobj in trimmable_reads.matches.items():
-            if matchobj is None:
-                seq = trimmable_reads.seqs[read_id]
-                args.log.write("{0}\tNo match\t{1}\t\t\n".format(
-                    read_id, len(seq)))
-            else:
-                args.log.write("{0}\t{1}\t{2}\t{3}\t{4}\n".format(
-                    read_id, matchobj.method, matchobj.start,
-                    matchobj.mismatches, matchobj.primerseq,
-                ))
+    output_loginfo = trimmable_reads.output_loginfo()
+    write_log(args.log, output_loginfo, trimmable_reads.loginfo_colnames)
+
+
+def write_fastq(f, reads):
+    for desc, seq, qual in reads:
+        f.write("@{0}\n{1}\n+\n{2}\n".format(desc, seq, qual))
+
+
+def write_log(f, loginfo, colnames=None):
+    if colnames:
+        f.write("\t".join(colnames))
+        f.write("\n")
+    for vals in loginfo:
+        f.write("\t".join(str(v) if v is not None else "" for v in vals))
+        f.write("\n")

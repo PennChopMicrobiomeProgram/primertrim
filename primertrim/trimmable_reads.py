@@ -25,7 +25,7 @@ class TrimmableReads:
     def register_match(self, read_id, matchobj):
         self.matches[read_id] = matchobj
 
-    def get_trimmed_reads(self):
+    def output_reads(self, min_length=0):
         for read_id in self.descs.keys():
             matchobj = self.matches[read_id]
             desc = self.descs[read_id]
@@ -34,7 +34,23 @@ class TrimmableReads:
             if matchobj is not None:
                 seq = seq[:matchobj.start]
                 qual = qual[:matchobj.start]
-            yield (desc, seq, qual)
+            if len(seq) >= min_length:
+                yield (desc, seq, qual)
+
+    def output_loginfo(self):
+        for read_id, matchobj in self.matches.items():
+            if matchobj is None:
+                seq = self.seqs[read_id]
+                yield (read_id, "No match", len(seq), None, None)
+            else:
+                yield (
+                    read_id, matchobj.method, matchobj.start,
+                    matchobj.mismatches, matchobj.primerseq,
+                )
+
+    loginfo_colnames = [
+        "read_id", "match_type", "trimmed_length", "mismatches",
+        "observed_primer"]
 
 
 def parse_fastq(f):
