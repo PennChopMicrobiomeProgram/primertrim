@@ -1,4 +1,4 @@
-from primertrim.fastq import TrimmableReads
+from primertrim.trimmable_reads import TrimmableReads
 
 from collections import namedtuple
 

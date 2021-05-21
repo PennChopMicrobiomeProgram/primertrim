@@ -3,7 +3,7 @@ import os
 import sys
 import tempfile
 
-from .fastq import TrimmableReads, write_fastq
+from .trimmable_reads import TrimmableReads, write_fastq
 from .matcher import (
     CompleteMatcher, PartialMatcher, AlignmentMatcher,
 )
