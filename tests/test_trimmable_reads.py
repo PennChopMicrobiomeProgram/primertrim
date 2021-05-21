@@ -7,6 +7,10 @@ read1 = ("seq1", "ATGTCATGACTTGACTGCGG", "FFFFFFFFFFFFFFFFFFFF")
 read2 = ("seq2", "AGTCACGCTGACTGCATTGA", "FFFFFFFFFFFFFFFFFFFF")
 read3 = ("seq3", "TACGTCATGCATCGTAGTAA", "FFFFFFFFFFFFFFFFFFFF")
 
+seq1 = ("seq1", "ATGTCATGACTTGACTGCGG")
+seq2 = ("seq2", "AGTCACGCTGACTGCATTGA")
+seq3 = ("seq3", "TACGTCATGCATCGTAGTAA")
+
 log1 = ("seq1", "No match", 20, None, None)
 log2 = ("seq2", "No match", 20, None, None)
 log3 = ("seq3", "No match", 20, None, None)
@@ -28,14 +32,12 @@ class MockMatch:
 def test_register_match():
     t = TrimmableReads([read1, read2, read3])
 
-    read_ids = [read_id for read_id, seq in t.get_unmatched_seqs()]
-    assert read_ids == ["seq1", "seq2", "seq3"]
+    assert list(t.get_unmatched_seqs()) == [seq1, seq2, seq3]
 
     m = MockMatch(10)
     t.register_match("seq2", m)
 
-    read_ids = [read_id for read_id, seq in t.get_unmatched_seqs()]
-    assert read_ids == ["seq1", "seq3"]
+    assert list(t.get_unmatched_seqs()) == [seq1, seq3]
 
 
 def test_output():
