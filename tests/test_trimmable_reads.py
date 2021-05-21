@@ -1,7 +1,5 @@
 from primertrim.trimmable_reads import TrimmableReads
 
-from collections import namedtuple
-
 
 read1 = ("seq1", "ATGTCATGACTTGACTGCGG", "FFFFFFFFFFFFFFFFFFFF")
 read2 = ("seq2", "AGTCACGCTGACTGCATTGA", "FFFFFFFFFFFFFFFFFFFF")
