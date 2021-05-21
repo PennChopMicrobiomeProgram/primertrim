@@ -29,9 +29,8 @@ def main(argv=None):
     io_group.add_argument(
         "--min-length", type=int, default=50,
         help=(
-            "Minimum length of reads written to the output FASTQ file. Set to "
-            "a negative number to write all reads, including zero-length "
-            "reads (default: %(default)s)"))
+            "Minimum length of reads written to the output FASTQ file. "
+            "(default: %(default)s)"))
 
     complete_group = p.add_argument_group("Complete, partial matching stages")
     complete_group.add_argument(
