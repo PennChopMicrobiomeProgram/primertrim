@@ -1,4 +1,5 @@
 from primertrim.trimmable_reads import TrimmableReads
+from primertrim.matcher import PrimerMatch
 
 
 read1 = ("seq1", "ATGTCATGACTTGACTGCGG", "FFFFFFFFFFFFFFFFFFFF")
@@ -18,21 +19,12 @@ log2_trim10 = ("seq2", "Complete", 10, 0, "ACTGCATTGA")
 read2_trim0 = ("seq2", "", "")
 
 
-class MockMatch:
-    method = "Complete"
-    mismatches = 0
-    primerseq = "ACTGCATTGA"
-
-    def __init__(self, start):
-        self.start = start
-
-
 def test_register_match():
     t = TrimmableReads([read1, read2, read3])
 
     assert list(t.get_unmatched_seqs()) == [seq1, seq2, seq3]
 
-    m = MockMatch(10)
+    m = PrimerMatch("Complete", 10, 0, "ACTGCATTGA")
     t.register_match("seq2", m)
 
     assert list(t.get_unmatched_seqs()) == [seq1, seq3]
@@ -43,7 +35,7 @@ def test_output():
 
     assert list(t.output_reads()) == [read1, read2, read3]
 
-    m = MockMatch(10)
+    m = PrimerMatch("Complete", 10, 0, "ACTGCATTGA")
     t.register_match("seq2", m)
 
     assert list(t.output_reads()) == [read1, read2_trim10, read3]
@@ -52,7 +44,7 @@ def test_output():
 
 def test_output_min_length():
     t = TrimmableReads([read1, read2, read3])
-    m = MockMatch(10)
+    m = PrimerMatch("Complete", 10, 0, "ACTGCATTGA")
     t.register_match("seq2", m)
 
     # All reads written out
@@ -65,7 +57,7 @@ def test_output_min_length():
 
 def test_output_zero_length():
     t = TrimmableReads([read1, read2, read3])
-    m = MockMatch(0)
+    m = PrimerMatch("Complete", 0, 0, "ACTGCATTGA")
     t.register_match("seq2", m)
 
     # All reads written out
