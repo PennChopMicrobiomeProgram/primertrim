@@ -23,6 +23,8 @@ def test_main_script(tmp_path):
         "--log", log_fp,
         "--mismatches", "0",
         "--min-partial", "100",
+        "--alignment",
+        "--align_id", "0.7"
     ]
     main(args)
 
