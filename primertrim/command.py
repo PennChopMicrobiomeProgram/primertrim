@@ -61,6 +61,11 @@ def main(argv=None):
         help=(
             "Number of CPU threads to use during the alignment stage "
             "(default: all the threads)"))
+    alignment_group.add_argument(
+        "--align_id", type=float, default=0.85,
+        help=(
+            "Minimum percent identity to consider a primer match in vsearch alignment."
+            "(default: %(default)s)"))
     args = p.parse_args(argv)
 
     if args.input_fastq is None:
@@ -87,7 +92,7 @@ def main(argv=None):
         else:
             temp_alignment_dir = tempfile.TemporaryDirectory()
             alignment_dir = temp_alignment_dir.name
-        am = AlignmentMatcher(queryset, alignment_dir, args.threads)
+        am = AlignmentMatcher(queryset, alignment_dir, args.align_id, args.threads)
         matchers.append(am)
 
     trimmable_reads = TrimmableReads.from_fastq(args.input_fastq)

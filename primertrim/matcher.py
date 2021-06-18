@@ -107,11 +107,12 @@ class PartialMatcher(Matcher):
 
 
 class AlignmentMatcher(Matcher):
-    def __init__(self, queryset, alignment_dir, cores=1):
+    def __init__(self, queryset, alignment_dir, align_id, cores=1):
         self.queryset = queryset
         assert(os.path.exists(alignment_dir))
         assert(os.path.isdir(alignment_dir))
         self.alignment_dir = alignment_dir
+        self.align_id = align_id
         self.cores = cores
 
     def _make_fp(self, filename):
@@ -132,7 +133,7 @@ class AlignmentMatcher(Matcher):
         a = VsearchAligner(subject_fp)
         hits = a.search(
             seqs.items(), query_fp, result_fp,
-            min_id=0.75, threads=self.cores)
+            min_id=self.align_id, threads=self.cores)
 
         for hit in hits:
             seq_id = hit["qseqid"]

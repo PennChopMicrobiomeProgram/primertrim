@@ -4,7 +4,7 @@ import tempfile
 
 DEFAULT_BLAST_FIELDS = [
     "qseqid", "sseqid", "pident", "length", "mismatch", "gapopen",
-    "qstart", "qend", "sstart", "send", "qlen", "slen", "qseq", "sseq",
+    "qstart", "qend", "sstart", "send", "qlen", "slen", "qseq", "sseq", "qstrand",
 ]
 
 BLAST_FIELD_TYPES = {
@@ -22,6 +22,7 @@ BLAST_FIELD_TYPES = {
     "slen": int,
     "qseq": str,
     "sseq": str,
+    "qstrand": str,
 }
 
 BLAST_TO_VSEARCH = {
@@ -39,6 +40,7 @@ BLAST_TO_VSEARCH = {
     "slen": "ts",
     "qseq": "qrow",
     "sseq": "trow",
+    "qstrand": "qstrand",
 }
 
 def write_fasta(f, seqs):
@@ -75,7 +77,7 @@ class VsearchAligner:
             for hit in self.parse(f):
                 yield hit
 
-    def _call(self, query_fp, output_fp, min_id=0.7, threads=None):
+    def _call(self, query_fp, output_fp, min_id=0.85, threads=None):
         id_arg = "{:.3f}".format(min_id)
         userfields_arg = "+".join(BLAST_TO_VSEARCH[f] for f in self.fields)
         args = [
@@ -108,4 +110,8 @@ class VsearchAligner:
                 for field in self.fields:
                     fcn = BLAST_FIELD_TYPES[field]
                     res[field] = fcn(res[field])
+            if res["qstrand"] == "-":
+                qstart_temp = res["qlen"]-res["qend"]+1
+                res["qend"] = res["qlen"]-res["qstart"]+1
+                res["qstart"] = qstart_temp
             yield res
