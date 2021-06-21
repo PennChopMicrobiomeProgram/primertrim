@@ -84,6 +84,7 @@ class VsearchAligner:
             "vsearch",
             "--usearch_global", query_fp,
             "--minseqlength", "10",
+            "--mincols", "10",
             "--id", id_arg,
             "--wordlength", "4",
             "--strand", "both",
