@@ -141,6 +141,9 @@ class AlignmentMatcher(Matcher):
             # Vsearch indexes positions starting with 1
             start_idx = hit["qstart"] - 1
             end_idx = hit["qend"]
+            if hit["qstrand"] == "-":
+                start_idx = hit["qlen"]-hit["qend"]
+                end_idx = hit["qlen"]-hit["qstart"]+1
             assert(start_idx < end_idx)
             seq = seqs[seq_id]
             primerseq = seq[start_idx:end_idx]

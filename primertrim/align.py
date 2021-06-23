@@ -111,8 +111,4 @@ class VsearchAligner:
                 for field in self.fields:
                     fcn = BLAST_FIELD_TYPES[field]
                     res[field] = fcn(res[field])
-            if res["qstrand"] == "-":
-                qstart_temp = res["qlen"]-res["qend"]+1
-                res["qend"] = res["qlen"]-res["qstart"]+1
-                res["qstart"] = qstart_temp
             yield res
