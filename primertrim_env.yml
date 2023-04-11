@@ -1,0 +1,5 @@
+name: primertrim
+channels:
+  - bioconda
+dependencies:
+  - vsearch
