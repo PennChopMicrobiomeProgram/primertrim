@@ -15,7 +15,7 @@ Primertrim requires vsearch, our recommended method of installation is through c
 ```bash
 git clone https://github.com/PennChopMicrobiomeProgram/primertrim.git
 cd primertrim
-conda env create -f primertrim_env.yml -n primertrim_env
+conda env create -f primertrim_env.yml -n primertrim
 conda activate primertrim
 pip install .
 ```
