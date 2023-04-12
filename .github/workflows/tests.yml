@@ -38,8 +38,6 @@ jobs:
         python -m pip install -e .
     - name: Unit tests
       run: |
-        conda list
-        vsearch --version
         pytest -vvl tests/
     - name: Other tests
       if: matrix.python-version == '3.10'
