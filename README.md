@@ -7,7 +7,7 @@ Detect short primer sequences in FASTQ reads and trim the reads accordingly.
 ```bash
 git clone https://github.com/PennChopMicrobiomeProgram/primertrim.git
 cd primertrim
-conda env create -f primertrim_env.yml
+conda env create -f primertrim_env.yml -n primertrim_env
 conda activate primertrim
 pip install .
 ```
