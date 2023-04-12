@@ -18,13 +18,19 @@ def test_main_script(tmp_path):
     log_fp = str(tmp_path / "out.log")
     args = [
         "GCATCGATGAAGAACGCAGC",
-        "-i", input_fp,
-        "-o", output_fp,
-        "--log", log_fp,
-        "--mismatches", "0",
-        "--min-partial", "100",
+        "-i",
+        input_fp,
+        "-o",
+        output_fp,
+        "--log",
+        log_fp,
+        "--mismatches",
+        "0",
+        "--min-partial",
+        "100",
         "--alignment",
-        "--align_id", "0.7"
+        "--align_id",
+        "0.7",
     ]
     main(args)
 

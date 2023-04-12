@@ -1,9 +1,10 @@
 import itertools
 
+
 def reverse_complement(seq):
     rc = [COMPLEMENT_BASES[x] for x in seq]
     rc.reverse()
-    return ''.join(rc)
+    return "".join(rc)
 
 
 AMBIGUOUS_BASES = {
@@ -22,7 +23,7 @@ AMBIGUOUS_BASES = {
     "V": "CAG",
     "D": "TAG",
     "N": "TCAG",
-    }
+}
 
 
 # Ambiguous base codes for all bases EXCEPT the key
@@ -31,7 +32,7 @@ AMBIGUOUS_BASES_COMPLEMENT = {
     "C": "D",
     "A": "B",
     "G": "H",
-    }
+}
 
 
 def deambiguate(seq):
@@ -44,7 +45,8 @@ COMPLEMENT_BASES = {
     "C": "G",
     "A": "T",
     "G": "C",
-    }
+}
+
 
 def partial_seqs_left(seq, min_length):
     if min_length < len(seq):
