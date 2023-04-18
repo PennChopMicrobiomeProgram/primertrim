@@ -7,7 +7,7 @@ class TrimmableReads:
         for desc, seq, qual in reads:
             read_id = get_read_id(desc)
             if read_id in self.descs:
-                raise ValueError("Duplicate read ID: {}",format(read_id))
+                raise ValueError("Duplicate read ID: {}", format(read_id))
             self.descs[read_id] = desc
             self.seqs[read_id] = seq
             self.quals[read_id] = qual
@@ -32,8 +32,8 @@ class TrimmableReads:
             seq = self.seqs[read_id]
             qual = self.quals[read_id]
             if matchobj is not None:
-                seq = seq[:matchobj.start]
-                qual = qual[:matchobj.start]
+                seq = seq[: matchobj.start]
+                qual = qual[: matchobj.start]
             if len(seq) >= min_length:
                 yield (desc, seq, qual)
 
@@ -44,13 +44,20 @@ class TrimmableReads:
                 yield (read_id, "No match", len(seq), None, None)
             else:
                 yield (
-                    read_id, matchobj.method, matchobj.start,
-                    matchobj.mismatches, matchobj.primerseq,
+                    read_id,
+                    matchobj.method,
+                    matchobj.start,
+                    matchobj.mismatches,
+                    matchobj.primerseq,
                 )
 
     loginfo_colnames = [
-        "read_id", "match_type", "trimmed_length", "mismatches",
-        "observed_primer"]
+        "read_id",
+        "match_type",
+        "trimmed_length",
+        "mismatches",
+        "observed_primer",
+    ]
 
 
 def parse_fastq(f):

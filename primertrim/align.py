@@ -3,8 +3,21 @@ import subprocess
 import tempfile
 
 DEFAULT_BLAST_FIELDS = [
-    "qseqid", "sseqid", "pident", "length", "mismatch", "gapopen",
-    "qstart", "qend", "sstart", "send", "qlen", "slen", "qseq", "sseq", "qstrand",
+    "qseqid",
+    "sseqid",
+    "pident",
+    "length",
+    "mismatch",
+    "gapopen",
+    "qstart",
+    "qend",
+    "sstart",
+    "send",
+    "qlen",
+    "slen",
+    "qseq",
+    "sseq",
+    "qstrand",
 ]
 
 BLAST_FIELD_TYPES = {
@@ -43,9 +56,11 @@ BLAST_TO_VSEARCH = {
     "qstrand": "qstrand",
 }
 
+
 def write_fasta(f, seqs):
     for seq_id, seq in seqs:
         f.write(">{}\n{}\n".format(seq_id, seq))
+
 
 class VsearchAligner:
     def __init__(self, ref_seqs_fp):
@@ -58,7 +73,8 @@ class VsearchAligner:
         """Search seqs and return hits"""
         if input_fp is None:
             infile = tempfile.NamedTemporaryFile(
-                suffix=".fasta", mode="w+t", encoding="utf-8")
+                suffix=".fasta", mode="w+t", encoding="utf-8"
+            )
             write_fasta(infile, seqs)
             infile.seek(0)
             input_fp = infile.name
@@ -67,8 +83,7 @@ class VsearchAligner:
                 write_fasta(f, seqs)
 
         if output_fp is None:
-            outfile = tempfile.NamedTemporaryFile(
-                suffix=".txt", mode="wt")
+            outfile = tempfile.NamedTemporaryFile(suffix=".txt", mode="wt")
             output_fp = outfile.name
 
         self._call(input_fp, output_fp, **kwargs)
@@ -82,18 +97,29 @@ class VsearchAligner:
         userfields_arg = "+".join(BLAST_TO_VSEARCH[f] for f in self.fields)
         args = [
             "vsearch",
-            "--usearch_global", query_fp,
-            "--minseqlength", "10",
-            "--mincols", "10",
-            "--id", id_arg,
-            "--wordlength", "4",
-            "--strand", "both",
-            "--maxaccepts", "4",
-            "--minwordmatches", "3",
+            "--usearch_global",
+            query_fp,
+            "--minseqlength",
+            "10",
+            "--mincols",
+            "10",
+            "--id",
+            id_arg,
+            "--wordlength",
+            "4",
+            "--strand",
+            "both",
+            "--maxaccepts",
+            "4",
+            "--minwordmatches",
+            "3",
             "--top_hits_only",
-            "--userfields", userfields_arg,
-            "--db", self.ref_seqs_fp,
-            "--userout", output_fp,
+            "--userfields",
+            userfields_arg,
+            "--db",
+            self.ref_seqs_fp,
+            "--userout",
+            output_fp,
         ]
         if threads is not None:
             threads_arg = "{:d}".format(threads)

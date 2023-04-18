@@ -1,13 +1,23 @@
 # Primer trim
 
+<!-- Begin badges -->
+[![Tests](https://github.com/PennChopMicrobiomeProgram/primertrim/actions/workflows/tests.yml/badge.svg)](https://github.com/PennChopMicrobiomeProgram/primertrim/actions/workflows/tests.yml)
+[![CodeCov](https://github.com/PennChopMicrobiomeProgram/primertrim/actions/workflows/codecov.yml/badge.svg)](https://github.com/PennChopMicrobiomeProgram/primertrim/actions/workflows/codecov.yml)
+[![Super-Linter](https://github.com/PennChopMicrobiomeProgram/primertrim/actions/workflows/linter.yml/badge.svg)](https://github.com/PennChopMicrobiomeProgram/primertrim/actions/workflows/linter.yml)
+<!--  End badges  -->
+
 Detect short primer sequences in FASTQ reads and trim the reads accordingly.
 
 ## Installation
 
+Primertrim requires vsearch, our recommended method of installation is through conda and is shown here:
+
 ```bash
 git clone https://github.com/PennChopMicrobiomeProgram/primertrim.git
 cd primertrim
-pip install -e .
+conda env create -f primertrim_env.yml -n primertrim
+conda activate primertrim
+pip install .
 ```
 
 ## Algorithm
