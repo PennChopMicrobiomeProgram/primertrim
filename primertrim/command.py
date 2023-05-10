@@ -132,7 +132,6 @@ def main(argv=None):
         CompleteMatcher(queryset, args.mismatches, not args.no_revcomp),
         PartialMatcher(queryset, args.min_partial, not args.no_revcomp),
     ]
-    logging.info("DEBUG")
 
     if args.alignment:
         if args.alignment_dir:
@@ -153,7 +152,6 @@ def main(argv=None):
         unmatched_seqs = trimmable_reads.get_unmatched_seqs()
         matches_found = m.find_in_seqs(unmatched_seqs)
         for read_id, matchobj in matches_found:
-            logging.info("HEY")
             if matchobj is not None:
                 trimmable_reads.register_match(read_id, matchobj)
 
