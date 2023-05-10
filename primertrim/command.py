@@ -1,4 +1,5 @@
 import argparse
+import logging
 import os
 import sys
 import tempfile
@@ -97,18 +98,35 @@ def main(argv=None):
             "(default: %(default)s)"
         ),
     )
+
+    p.add_argument(
+        "--log_level",
+        type=int,
+        help="Sets the log level, default is 20 for info, use 10 for debug (Default: 20)",
+        default=20,
+    )
+
     args = p.parse_args(argv)
+    logging.basicConfig()
+    logging.getLogger().setLevel(args.log_level)
+    logging.info(f"Starting primertrim")
 
     if args.input_fastq is None:
+        logging.info("Looking for input from stdin")
         args.input_fastq = sys.stdin
 
     if args.output_fastq is None:
+        logging.info("Writing output to stdout")
         args.output_fastq = sys.stdout
 
     queryset = []
     for ambiguous_primer in args.primer:
         for unambiguous_primer in deambiguate(ambiguous_primer):
             queryset.append(unambiguous_primer)
+    if len(queryset) > 50:
+        logging.info(f"Number of queries: {len(queryset)}")
+    else:
+        logging.info(f"Query set: {queryset}")
 
     matchers = [
         CompleteMatcher(queryset, args.mismatches, not args.no_revcomp),
@@ -123,12 +141,14 @@ def main(argv=None):
         else:
             temp_alignment_dir = tempfile.TemporaryDirectory()
             alignment_dir = temp_alignment_dir.name
+        logging.info(f"Using alignment directory: {alignment_dir}")
         am = AlignmentMatcher(queryset, alignment_dir, args.align_id, args.threads)
         matchers.append(am)
 
     trimmable_reads = TrimmableReads.from_fastq(args.input_fastq)
 
     for m in matchers:
+        logging.info(f"Working with {type(m).__name__}")
         unmatched_seqs = trimmable_reads.get_unmatched_seqs()
         matches_found = m.find_in_seqs(unmatched_seqs)
         for read_id, matchobj in matches_found:
@@ -143,11 +163,13 @@ def main(argv=None):
 
 
 def write_fastq(f, reads):
+    logging.info("Writing fastq")
     for desc, seq, qual in reads:
         f.write("@{0}\n{1}\n+\n{2}\n".format(desc, seq, qual))
 
 
 def write_log(f, loginfo, colnames=None):
+    logging.info("Writing log")
     if colnames:
         f.write("\t".join(colnames))
         f.write("\n")

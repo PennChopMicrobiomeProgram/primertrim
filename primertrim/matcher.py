@@ -1,7 +1,9 @@
 import abc
 import collections
 import itertools
+import logging
 import os.path
+import tqdm
 
 from .dna import (
     AMBIGUOUS_BASES_COMPLEMENT,
@@ -59,24 +61,27 @@ class CompleteMatcher(Matcher):
 
     def _iter_mismatched_queries(self, n_mismatch):
         # This algorithm is terrible unless the number of mismatches is very small
-        assert n_mismatch in [0, 1, 2, 3]
-        for query in self.queryset:
-            idx_sets = itertools.combinations(range(len(query)), n_mismatch)
-            for idx_set in idx_sets:
-                # Replace base at each position with a literal "N", to match
-                # ambiguous bases in other sequences
-                yield replace_with_n(query, idx_set)
-                # Change to list because strings are immutable
-                qchars = list(query)
-                # Replace the base at each mismatch position with an
-                # ambiguous base specifying all possibilities BUT the one
-                # we see.
-                for idx in idx_set:
-                    qchars[idx] = AMBIGUOUS_BASES_COMPLEMENT[qchars[idx]]
-                # Expand to all possibilities for mismatching at this
-                # particular set of positions
-                for query_with_mismatches in deambiguate(qchars):
-                    yield query_with_mismatches
+        assert n_mismatch in [0, 1, 2, 3], f"Mismatch number {n_mismatch} is too high"
+        logging.info(f"Iterating over {n_mismatch} mismatch query set")
+        with tqdm.tqdm(total=len(self.queryset)) as pbar:
+            for query in self.queryset:
+                pbar.update(1)
+                idx_sets = itertools.combinations(range(len(query)), n_mismatch)
+                for idx_set in idx_sets:
+                    # Replace base at each position with a literal "N", to match
+                    # ambiguous bases in other sequences
+                    yield replace_with_n(query, idx_set)
+                    # Change to list because strings are immutable
+                    qchars = list(query)
+                    # Replace the base at each mismatch position with an
+                    # ambiguous base specifying all possibilities BUT the one
+                    # we see.
+                    for idx in idx_set:
+                        qchars[idx] = AMBIGUOUS_BASES_COMPLEMENT[qchars[idx]]
+                    # Expand to all possibilities for mismatching at this
+                    # particular set of positions
+                    for query_with_mismatches in deambiguate(qchars):
+                        yield query_with_mismatches
 
     def find_match(self, seq):
         for n_mismatches, queryset in enumerate(self.mismatched_queryset):

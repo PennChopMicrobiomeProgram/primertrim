@@ -13,4 +13,5 @@ setup(
             "ptrim=primertrim.command:main",
         ],
     },
+    install_requires=["tqdm"],
 )

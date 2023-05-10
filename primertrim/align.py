@@ -1,4 +1,4 @@
-import os.path
+import logging
 import subprocess
 import tempfile
 
@@ -124,7 +124,9 @@ class VsearchAligner:
         if threads is not None:
             threads_arg = "{:d}".format(threads)
             args.extend(["--threads", threads_arg])
+        logging.info(f"Starting vsearch with arguments: {args}")
         subprocess.check_call(args, stderr=self.stderr)
+        logging.info("Finished vsearch")
 
     def parse(self, f):
         for line in f:
