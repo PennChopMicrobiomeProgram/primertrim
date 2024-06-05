@@ -58,8 +58,10 @@ class CompleteMatcher(Matcher):
         return list(self._iter_mismatched_queries(n_mismatch))
 
     def _iter_mismatched_queries(self, n_mismatch):
-        # This algorithm is terrible unless the number of mismatches is very small
-        assert n_mismatch in [0, 1, 2, 3]
+        if n_mismatch not in [0, 1, 2, 3]:
+            raise TooManyMismatchesException(
+                "This algorithm is terrible unless the number of mismatches is very small (0, 1, 2, or 3)"
+            )
         for query in self.queryset:
             idx_sets = itertools.combinations(range(len(query)), n_mismatch)
             for idx_set in idx_sets:
@@ -114,8 +116,10 @@ class PartialMatcher(Matcher):
 class AlignmentMatcher(Matcher):
     def __init__(self, queryset, alignment_dir, align_id, cores=1):
         self.queryset = queryset
-        assert os.path.exists(alignment_dir)
-        assert os.path.isdir(alignment_dir)
+        if not os.path.exists(alignment_dir):
+            raise FileNotFoundError("Alignment directory does not exist")
+        if not os.path.isdir(alignment_dir):
+            raise NotADirectoryError("Alignment directory is not a directory")
         self.alignment_dir = alignment_dir
         self.align_id = align_id
         self.cores = cores
@@ -149,8 +153,13 @@ class AlignmentMatcher(Matcher):
             if hit["qstrand"] == "-":
                 start_idx = hit["qlen"] - hit["qend"]
                 end_idx = hit["qlen"] - hit["qstart"] + 1
-            assert start_idx < end_idx
+            if start_idx >= end_idx:
+                raise ValueError("Invalid start and end indices ({} is greater than or equal to {})".format(start_idx, end_idx))
             seq = seqs[seq_id]
             primerseq = seq[start_idx:end_idx]
             matchobj = PrimerMatch("Alignment", start_idx, mismatches, primerseq)
             yield seq_id, matchobj
+
+
+class TooManyMismatchesException(Exception):
+    pass
