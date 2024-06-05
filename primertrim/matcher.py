@@ -34,7 +34,7 @@ class Matcher(abc.ABC):
 
     def find_match(self, seq):
         """Returns a PrimerMatch object or None"""
-        raise NotImplemented()
+        raise NotImplementedError
 
 
 class CompleteMatcher(Matcher):
