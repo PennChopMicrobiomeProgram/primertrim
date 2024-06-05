@@ -154,7 +154,11 @@ class AlignmentMatcher(Matcher):
                 start_idx = hit["qlen"] - hit["qend"]
                 end_idx = hit["qlen"] - hit["qstart"] + 1
             if start_idx >= end_idx:
-                raise ValueError("Invalid start and end indices ({} is greater than or equal to {})".format(start_idx, end_idx))
+                raise ValueError(
+                    "Invalid start and end indices ({} is greater than or equal to {})".format(
+                        start_idx, end_idx
+                    )
+                )
             seq = seqs[seq_id]
             primerseq = seq[start_idx:end_idx]
             matchobj = PrimerMatch("Alignment", start_idx, mismatches, primerseq)
