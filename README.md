@@ -4,7 +4,7 @@
 [![Tests](https://github.com/PennChopMicrobiomeProgram/primertrim/actions/workflows/pr.yml/badge.svg)](https://github.com/PennChopMicrobiomeProgram/primertrim/actions/workflows/pr.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/d6e2cf6c74bf4888b9f09cd4506cccb7)](https://app.codacy.com/gh/PennChopMicrobiomeProgram/primertrim/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![codecov](https://codecov.io/gh/PennChopMicrobiomeProgram/primertrim/graph/badge.svg?token=CEH4E6QJEF)](https://codecov.io/gh/PennChopMicrobiomeProgram/primertrim)
-[![DockerHub](https://img.shields.io/docker/pulls/ctbushman/primertrim)](https://hub.docker.com/repository/docker/ctbushman/primertrim/)
+[![DockerHub](https://img.shields.io/docker/pulls/chopmicrobiome/primertrim)](https://hub.docker.com/repository/docker/chopmicrobiome/primertrim/)
 <!--  End badges  -->
 
 Detect short primer sequences in FASTQ reads and trim the reads accordingly.
@@ -25,7 +25,7 @@ pip install .
 We also have a docker image available on DockerHub:
 
 ```
-docker run --rm -it ctbushman/primertrim:latest ptrim -h
+docker run --rm -it chopmicrobiome/primertrim:latest ptrim -h
 ```
 
 ## Algorithm
