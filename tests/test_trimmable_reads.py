@@ -1,7 +1,6 @@
 from primertrim.trimmable_reads import TrimmableReads
 from primertrim.matcher import PrimerMatch
 
-
 read1 = ("seq1", "ATGTCATGACTTGACTGCGG", "FFFFFFFFFFFFFFFFFFFF")
 read2 = ("seq2", "AGTCACGCTGACTGCATTGA", "FFFFFFFFFFFFFFFFFFFF")
 read3 = ("seq3", "TACGTCATGCATCGTAGTAA", "FFFFFFFFFFFFFFFFFFFF")

@@ -2,7 +2,6 @@ from pathlib import Path
 
 from primertrim.command import main
 
-
 DATA_DIR = Path(__file__).parent / "data"
 
 
