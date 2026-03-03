@@ -29,7 +29,6 @@ def main(argv=None):
     )
     io_group.add_argument(
         "--log",
-        type=argparse.FileType("w"),
         help="Log file of primers and location (default: not written)",
     )
     io_group.add_argument(
@@ -140,8 +139,10 @@ def main(argv=None):
     output_reads = trimmable_reads.output_reads(args.min_length)
     write_fastq(output_fastq, output_reads)
 
-    output_loginfo = trimmable_reads.output_loginfo()
-    write_log(args.log, output_loginfo, trimmable_reads.loginfo_colnames)
+    if args.log:
+        output_loginfo = trimmable_reads.output_loginfo()
+        with open(args.log, "w") as f:
+            write_log(f, output_loginfo, trimmable_reads.loginfo_colnames)
 
 
 def write_fastq(f, reads):
