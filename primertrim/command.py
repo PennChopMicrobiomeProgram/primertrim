@@ -20,13 +20,11 @@ def main(argv=None):
     io_group.add_argument(
         "-i",
         "--input-fastq",
-        type=argparse.FileType("r"),
         help="Input FASTQ file to be trimmed (default: standard input)",
     )
     io_group.add_argument(
         "-o",
         "--output-fastq",
-        type=argparse.FileType("w"),
         help="Output FASTQ file after trimming (default: standard output)",
     )
     io_group.add_argument(
@@ -100,10 +98,14 @@ def main(argv=None):
     args = p.parse_args(argv)
 
     if args.input_fastq is None:
-        args.input_fastq = sys.stdin
+        input_fastq = sys.stdin
+    else:
+        input_fastq = open(args.input_fastq, "r")
 
     if args.output_fastq is None:
-        args.output_fastq = sys.stdout
+        output_fastq = sys.stdout
+    else:
+        output_fastq = open(args.output_fastq, "w")
 
     queryset = []
     for ambiguous_primer in args.primer:
@@ -126,7 +128,7 @@ def main(argv=None):
         am = AlignmentMatcher(queryset, alignment_dir, args.align_id, args.threads)
         matchers.append(am)
 
-    trimmable_reads = TrimmableReads.from_fastq(args.input_fastq)
+    trimmable_reads = TrimmableReads.from_fastq(input_fastq)
 
     for m in matchers:
         unmatched_seqs = trimmable_reads.get_unmatched_seqs()
@@ -136,7 +138,7 @@ def main(argv=None):
                 trimmable_reads.register_match(read_id, matchobj)
 
     output_reads = trimmable_reads.output_reads(args.min_length)
-    write_fastq(args.output_fastq, output_reads)
+    write_fastq(output_fastq, output_reads)
 
     output_loginfo = trimmable_reads.output_loginfo()
     write_log(args.log, output_loginfo, trimmable_reads.loginfo_colnames)
